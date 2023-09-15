@@ -32,8 +32,8 @@ export default function Welcome(){
         </Text>
         <Text style={styles.text}>Faça login para começar ou cadastre-se</Text>
 
-        <TouchableOpacity onPress={ () => navigation.navigate('SignIn')} style={styles.buttonSignIn}>
-          <Text style={styles.buttonSignInText}>Acessar</Text>
+        <TouchableOpacity onPress={ () => navigation.navigate('Login')} style={styles.buttonLogin}>
+          <Text style={styles.buttonLoginText}>Acessar</Text>
         </TouchableOpacity>
 
         <Separator/>
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
   },
-  buttonSignIn: {
+  buttonLogin: {
     position: 'absolute',
     backgroundColor: '#FFF',
     borderWidth: 2,
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonSignInText: {
+  buttonLoginText: {
     fontSize: 18,
     color: '#E8D532',
     fontWeight: 'bold',

@@ -13,8 +13,8 @@ export default function SignUp({navigation}){
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.header2}>
-          <Text style={styles.title}>Criar Conta</Text>
-          <Text style={styles.text}>Connect with your Friend today!</Text>
+          <Text style={styles.title}>Olá, Bem-vindo de volta 👋</Text>
+          <Text style={styles.text}>Sentimos sua falta!</Text>
         </View>
 
         <View style={styles.form}>
@@ -26,34 +26,6 @@ export default function SignUp({navigation}){
             placeholderTextColor='#a1a1a1'
             keyboardType='email-address'
             style={{width: "100%"}}
-            ></TextInput>
-          </View>
-        </View>
-
-        <View style={styles.form}>
-          <Text style={styles.emailTitleText}>Número de telefone</Text>
-
-          <View style={styles.inputNumber}>
-            <TextInput 
-            placeholder='+55'
-            placeholderTextColor='#a1a1a1'
-            keyboardType='numeric'
-            style={{
-              width: "12%",
-              borderRightWidth: 1,
-              borderLeftColor: COLORS.grey,
-              height: '100%'
-            }}
-            >
-            </TextInput>
-
-            <TextInput
-            placeholder="Informe seu número de telefone"
-            placeholderTextColor="#a1a1a1"
-            keyboardType='numeric'
-            style={{
-              width: "80%"
-            }}
             ></TextInput>
           </View>
         </View>
@@ -85,33 +57,6 @@ export default function SignUp({navigation}){
           </View>
         </View>
 
-        <View style={styles.form}>
-          <Text style={styles.emailTitleText}>Confirmação de senha</Text>
-
-          <View style={styles.input}>
-            <TextInput 
-            placeholder='Repita a senha'
-            placeholderTextColor='#a1a1a1'
-            secureTextEntry={isPasswordShown}
-            style={{width: "100%"}}
-            ></TextInput>
-
-            <TouchableOpacity 
-            style={styles.viewPwd}
-            onPress={() => setIsPasswordShown(!isPasswordShown)}
-            >
-              {
-                isPasswordShown == true ? (
-                  <Ionicons name="eye-off" size={24} color={COLORS.black}/>
-                ) : (
-                  <Ionicons name="eye" size={24} color={COLORS.black}/>
-                )
-              }
-            </TouchableOpacity>
-
-          </View>
-        </View>
-
         <View style={styles.checkbox}>
           <Checkbox 
           style={{marginRight: 8}}
@@ -120,7 +65,7 @@ export default function SignUp({navigation}){
           color={isChecked ? COLORS.secondary : undefined}
           />
 
-          <Text>Eu li e concordo os termos e condições.</Text>
+          <Text>Lembrar de mim</Text>
         </View>
 
         <Button
@@ -224,9 +169,9 @@ export default function SignUp({navigation}){
           justifyContent: "center",
           marginVertical: 22
         }}>
-          <Text style={{fontSize: 16, color: COLORS.black}}>Já possui uma conta?</Text>
+          <Text style={{fontSize: 16, color: COLORS.black}}>Ainda não possui uma conta?</Text>
           <Pressable
-            onPress={() => navigation.navigate("Login")}
+            onPress={() => navigation.navigate("SignUp")}
           >
             <Text style={{
               fontSize: 16,
@@ -234,7 +179,7 @@ export default function SignUp({navigation}){
               fontWeight: "bold",
               marginLeft: 6
             }}> 
-            Login</Text>
+            Registre-se</Text>
           </Pressable>
         </View>
 

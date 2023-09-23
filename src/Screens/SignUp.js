@@ -125,15 +125,17 @@ export default function SignUp({navigation}){
                 control={control}
                 name="cpf"
                 render={({ field: { onChange, onBlur, value }}) => (
-                  <TextInput 
-                    onChangeText={onChange}
+                  <TextInputMask
+                    type={"cpf"} 
+                    onChange={onChange}
+                    onChangeText={ text => setCpf(text) }
                     onBlur={onBlur}
-                    value={value}
+                    value={cpf}
                     placeholder='Digite seu CPF'
                     placeholderTextColor={COLORS.grey}
                     keyboardType='numeric'
                     style={{width: "100%"}}
-                  />  
+                  />   
                 )}
               />
             </View>
@@ -169,10 +171,16 @@ export default function SignUp({navigation}){
                 control={control}
                 name='number'
                 render={({ field: { onChange, onBlur, value }}) => (
-                  <TextInput
-                  onChangeText={onChange}
+                  <TextInputMask
+                  type={"cel-phone"}
+                  options={{
+                    maskType: "BRL",
+                    withDDD: true,
+                    dddMask: "(99) "
+                  }}
+                  onChangeText={ text => setCell(text) }
                   onBlur={onBlur}
-                  value={value}
+                  value={cell}
                     placeholder="Informe seu número de telefone"
                     placeholderTextColor={COLORS.grey}
                     keyboardType='numeric'

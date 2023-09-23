@@ -5,6 +5,10 @@ import COLORS from '../constants/colors';
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox"
 import Button from '../components/Button';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
 
 export default function SignUp({navigation}){
   const [isPasswordShown, setIsPasswordShown] = useState(false);
@@ -17,26 +21,28 @@ export default function SignUp({navigation}){
           <Text style={styles.text}>Sentimos sua falta!</Text>
         </View>
 
+        {/*E-mail Input*/}
         <View style={styles.form}>
           <Text style={styles.emailTitleText}>E-mail</Text>
 
           <View style={styles.input}>
             <TextInput 
             placeholder='Digite seu e-mail'
-            placeholderTextColor='#a1a1a1'
+            placeholderTextColor={COLORS.grey}
             keyboardType='email-address'
             style={{width: "100%"}}
             ></TextInput>
           </View>
         </View>
 
+        {/* Password Input */}
         <View style={styles.form}>
           <Text style={styles.emailTitleText}>Senha</Text>
 
           <View style={styles.input}>
             <TextInput 
             placeholder='Insira uma senha'
-            placeholderTextColor='#a1a1a1'
+            placeholderTextColor={COLORS.grey}
             secureTextEntry={isPasswordShown}
             style={{width: "100%"}}
             ></TextInput>
@@ -57,6 +63,7 @@ export default function SignUp({navigation}){
           </View>
         </View>
 
+        {/* Checkbox */}
         <View style={styles.checkbox}>
           <Checkbox 
           style={{marginRight: 8}}
@@ -68,8 +75,9 @@ export default function SignUp({navigation}){
           <Text>Lembrar de mim</Text>
         </View>
 
+        {/* Button Component */}
         <Button
-        title="Cadastrar"
+        title="Acessar"
         filled
         style={{
           marginTop: 18,
@@ -77,109 +85,52 @@ export default function SignUp({navigation}){
         }}
         />
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginVertical:  20
-          }}
-        >
-          <View 
-            style={{
-              flex: 1,
-              height: 1,
-              backgroundColor: COLORS.grey,
-              marginHorizontal: 10
-            }}
-          />
-          <Text style={{fontSize: 14}}>Ou cadastre-se com</Text>
-          <View 
-            style={{
-              flex: 1,
-              height: 1,
-              backgroundColor: COLORS.grey,
-              marginHorizontal: 10
-            }}
-          />
+        {/* Others register options */}
+        {/* Lines */}
+        <View style={styles.lines}>
+          <View style={styles.line}/>
+          <Text style={{fontSize: 14}}>Ou acessar com</Text>
+          <View style={styles.line}/>
         </View>
 
-        <View style={{
-            flexDirection: "row",
-            justifyContent: "center"
-        }}>
+        {/* Buttons */}
+        {/* Facebook */}
+        <View style={styles.rowButtons}>
           <TouchableOpacity
             onPress={() => console.log("Pressed")}
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "row",
-              height: 52,
-              borderWidth: 1,
-              borderColor: COLORS.grey,
-              marginRight: 4,
-              borderRadius: 10
-            }}
+            style={styles.othersButton}
           >
             <Image
               source={require("../assets/facebook.png")}
-              style={{
-                height: 36,
-                width: 36,
-                marginRight: 8
-              }}
+              style={styles.imagesButton}
               resizeMode='contain'
             />
-
             <Text>Facebook</Text>
 
           </TouchableOpacity>
 
+          {/* Google */}
           <TouchableOpacity
             onPress={() => console.log("Pressed")}
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "row",
-              height: 52,
-              borderWidth: 1,
-              borderColor: COLORS.grey,
-              marginRight: 4,
-              borderRadius: 10
-            }}
+            style={styles.othersButton}
           >
             <Image
               source={require("../assets/google.png")}
-              style={{
-                height: 36,
-                width: 36,
-                marginRight: 8
-              }}
+              style={styles.imagesButton}
               resizeMode='contain'
             />
-
             <Text>Google</Text>
-
           </TouchableOpacity>
+
         </View>
 
-        <View style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          marginVertical: 22
-        }}>
+        {/* Dont't have an account yet? */}
+        <View style={styles.footer}>
           <Text style={{fontSize: 16, color: COLORS.black}}>Ainda não possui uma conta?</Text>
-          <Pressable
-            onPress={() => navigation.navigate("SignUp")}
-          >
-            <Text style={{
-              fontSize: 16,
-              color: COLORS.primary,
-              fontWeight: "bold",
-              marginLeft: 6
-            }}> 
-            Registre-se</Text>
+          <Pressable onPress={() => navigation.navigate("SignUp")}>
+            <Text style={styles.loginNavigate}> 
+              Registre-se
+            </Text>
           </Pressable>
         </View>
 
@@ -221,22 +172,11 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 48,
-    borderColor: COLORS.black,
+    borderColor: '#a1a1a1',
     borderWidth: 1,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
-    paddingLeft: 22,
-  },
-  inputNumber: {
-    width: '100%',
-    height: 48,
-    borderColor: COLORS.black,
-    borderWidth: 1,
-    borderRadius: 8,
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
     paddingLeft: 22,
   },
   viewPwd: {
@@ -247,4 +187,46 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginVertical: 6,
   },
+  lines: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical:  20
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: COLORS.lightGrey,
+    marginHorizontal: 10
+  },
+  othersButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    height: 52,
+    borderWidth: 1,
+    borderColor: COLORS.lightGrey,
+    marginRight: 4,
+    borderRadius: 10
+  },
+  rowButtons: {
+    flexDirection: "row",
+    justifyContent: "center"
+  },
+  imagesButton: {
+    height: 36,
+    width: 36,
+    marginRight: 8
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 22
+  },
+  loginNavigate: {
+    fontSize: 16,
+    color: COLORS.primary,
+    fontWeight: "bold",
+    marginLeft: 6
+  }
 })

@@ -1,10 +1,12 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 export default function Home() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.Title}>Home</Text>
-    </View>
+    <ScrollView>
+      <View style={styles.container}>
+        <Text style={styles.Title}>Home</Text>
+      </View>
+    </ScrollView>
   );
 }
 
@@ -14,6 +16,7 @@ const styles = StyleSheet.create({
     borderStartColor: '#fff',
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 30
   },
   Title: {
     fontSize:22,

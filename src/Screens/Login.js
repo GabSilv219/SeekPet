@@ -1,6 +1,5 @@
-import { View, Text, Image, Pressable, TextInput, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, Image, Pressable, TextInput, TouchableOpacity, StyleSheet, Keyboard, ScrollView } from 'react-native'
 import React, { useState } from 'react'
-import { SafeAreaView } from "react-native-safe-area-context";
 import COLORS from '../constants/colors';
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox"
@@ -9,140 +8,205 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
+// Validations
+const schema = yup.object({
+  email: yup.string()
+    .email("É necessário informar um e-mail válido*").required("É necessário informar um e-mail*"),
+  password: yup.string()
+    .min(6, "A senha deve ter pelo menos 6 digítos*")
+    .max(30, "A senha deve ter no máximo 12 digítos*")
+    .required("É necessário informar uma senha de acesso*"),
+}) 
 
 export default function SignUp({navigation}){
-  const [isPasswordShown, setIsPasswordShown] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
+  const { control, handleSubmit, formState: { errors }} = useForm({
+    resolver: yupResolver(schema)
+  })
+
+  //Send data form and navigate to Login Page
+  const access = () => navigation.navigate("Home");
+  function handleSignIn(data){
+    console.log(data);
+    access();
+  }  
+
+  //Show or hide password digits
+  const [isPasswordShown, setIsPasswordShown] = useState(true);
+  
   return(
-    <SafeAreaView style={styles.container}>
+    <Pressable onPress={Keyboard.dismiss} style={styles.container}>
       <View style={styles.header}>
         <View style={styles.header2}>
           <Text style={styles.title}>Olá, Bem-vindo de volta 👋</Text>
           <Text style={styles.text}>Sentimos sua falta!</Text>
         </View>
 
+        {/* Form */}
         {/*E-mail Input*/}
         <View style={styles.form}>
           <Text style={styles.emailTitleText}>E-mail</Text>
 
-          <View style={styles.input}>
-            <TextInput 
-            placeholder='Digite seu e-mail'
-            placeholderTextColor={COLORS.grey}
-            keyboardType='email-address'
-            style={{width: "100%"}}
-            ></TextInput>
+          <View 
+            style={[
+              styles.input, {
+                borderColor: errors.email ? COLORS.error : COLORS.grey
+              }
+            ]}
+          >
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value }}) => (
+                <TextInput 
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  placeholder='Digite seu e-mail'
+                  placeholderTextColor={COLORS.grey}
+                  keyboardType='email-address'
+                  style={{width: "100%"}}
+                />  
+              )}
+            />
           </View>
+          {errors.email && <Text style={styles.labelError}>{errors.email?.message}</Text>}
         </View>
 
-        {/* Password Input */}
-        <View style={styles.form}>
-          <Text style={styles.emailTitleText}>Senha</Text>
+          {/* Password Input */}
+          <View style={styles.form}>
+            <Text style={styles.emailTitleText}>Senha</Text>
 
-          <View style={styles.input}>
-            <TextInput 
-            placeholder='Insira uma senha'
-            placeholderTextColor={COLORS.grey}
-            secureTextEntry={isPasswordShown}
-            style={{width: "100%"}}
-            ></TextInput>
-
-            <TouchableOpacity 
-            style={styles.viewPwd}
-            onPress={() => setIsPasswordShown(!isPasswordShown)}
+            <View 
+              style={[
+                styles.input, {
+                  borderColor: errors.confirm_password ? COLORS.error : COLORS.grey
+                }]}
             >
-              {
-                isPasswordShown == true ? (
-                  <Ionicons name="eye-off" size={24} color={COLORS.black}/>
-                ) : (
-                  <Ionicons name="eye" size={24} color={COLORS.black}/>
-                )
-              }
+              <Controller
+                control={control}
+                name='password'
+                render={({ field: { onChange, onBlur, value }}) => (
+                  <TextInput 
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    placeholder='Insira uma senha'
+                    placeholderTextColor={COLORS.grey}
+                    secureTextEntry={isPasswordShown}
+                    style={{width: "100%"}}
+                  />
+                )}
+              />
+
+              {/* Shown Password Function button */}
+              <TouchableOpacity 
+                style={styles.viewPwd}
+                onPress={() => setIsPasswordShown(!isPasswordShown)}
+              >
+                {
+                  isPasswordShown == true ? (
+                    <Ionicons name="eye-off" size={24} color={COLORS.grey}/>
+                  ) : (
+                    <Ionicons name="eye" size={24} color={COLORS.grey}/>
+                  )
+                }
+              </TouchableOpacity>
+
+            </View>
+            {errors.password && <Text style={styles.labelError}>{errors.password.message}</Text>}
+          </View>
+
+          {/* Checkbox */}
+          <View>
+            <Controller
+              control={control}
+              name='checkbox'
+              rules={{ required: true }}
+              render={({ field }) => (
+                <View  style={styles.checkbox}>
+                  <Checkbox
+                    style={{marginRight: 8}}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    color={COLORS.secondary}
+                  />
+                  <Text>Lembrar de mim.</Text>
+                </View>
+              )}
+            />
+          </View>
+
+
+          {/* Button Component*/}
+          <Button
+            onPress={handleSubmit(handleSignIn)}
+            title="Acessar"
+            filled
+            style={{
+              marginTop: 18,
+              marginBottom: 4,
+            }}
+          />
+
+          {/* Others register options */}
+          {/* Lines */}
+          <View style={styles.lines}>
+            <View style={styles.line}/>
+            <Text style={{fontSize: 14}}>Ou acessar com</Text>
+            <View style={styles.line}/>
+          </View>
+
+          {/* Buttons */}
+          {/* Facebook */}
+          <View style={styles.rowButtons}>
+            <TouchableOpacity
+              onPress={() => console.log("Pressed")}
+              style={styles.othersButton}
+            >
+              <Image
+                source={require("../assets/facebook.png")}
+                style={styles.imagesButton}
+                resizeMode='contain'
+              />
+              <Text>Facebook</Text>
+
+            </TouchableOpacity>
+
+            {/* Google */}
+            <TouchableOpacity
+              onPress={() => console.log("Pressed")}
+              style={styles.othersButton}
+            >
+              <Image
+                source={require("../assets/google.png")}
+                style={styles.imagesButton}
+                resizeMode='contain'
+              />
+              <Text>Google</Text>
             </TouchableOpacity>
 
           </View>
-        </View>
 
-        {/* Checkbox */}
-        <View style={styles.checkbox}>
-          <Checkbox 
-          style={{marginRight: 8}}
-          value={isChecked}
-          onValueChange={setIsChecked}
-          color={isChecked ? COLORS.secondary : undefined}
-          />
-
-          <Text>Lembrar de mim</Text>
-        </View>
-
-        {/* Button Component */}
-        <Button
-        title="Acessar"
-        filled
-        style={{
-          marginTop: 18,
-          marginBottom: 4,
-        }}
-        />
-
-        {/* Others register options */}
-        {/* Lines */}
-        <View style={styles.lines}>
-          <View style={styles.line}/>
-          <Text style={{fontSize: 14}}>Ou acessar com</Text>
-          <View style={styles.line}/>
-        </View>
-
-        {/* Buttons */}
-        {/* Facebook */}
-        <View style={styles.rowButtons}>
-          <TouchableOpacity
-            onPress={() => console.log("Pressed")}
-            style={styles.othersButton}
-          >
-            <Image
-              source={require("../assets/facebook.png")}
-              style={styles.imagesButton}
-              resizeMode='contain'
-            />
-            <Text>Facebook</Text>
-
-          </TouchableOpacity>
-
-          {/* Google */}
-          <TouchableOpacity
-            onPress={() => console.log("Pressed")}
-            style={styles.othersButton}
-          >
-            <Image
-              source={require("../assets/google.png")}
-              style={styles.imagesButton}
-              resizeMode='contain'
-            />
-            <Text>Google</Text>
-          </TouchableOpacity>
+          {/* Already have an account? */}
+          <View style={styles.footer}>
+            <Text style={{fontSize: 16, color: COLORS.black}}>Ainda não possui uma conta?</Text>
+            <Pressable onPress={() => navigation.navigate("SignUp")}>
+              <Text style={styles.loginNavigate}> 
+                Registre-se
+              </Text>
+            </Pressable>
+          </View>
 
         </View>
-
-        {/* Dont't have an account yet? */}
-        <View style={styles.footer}>
-          <Text style={{fontSize: 16, color: COLORS.black}}>Ainda não possui uma conta?</Text>
-          <Pressable onPress={() => navigation.navigate("SignUp")}>
-            <Text style={styles.loginNavigate}> 
-              Registre-se
-            </Text>
-          </Pressable>
-        </View>
-
-      </View>
-    </SafeAreaView>
+    </Pressable>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF", 
+    marginTop: -10,
   },
   header: {
     flex: 1,
@@ -171,9 +235,9 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
-    height: 48,
-    borderColor: '#a1a1a1',
+    height: 48, 
     borderWidth: 1,
+    borderColor: COLORS.grey,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
@@ -228,5 +292,13 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     fontWeight: "bold",
     marginLeft: 6
+  },
+  labelError: {
+    alignSelf: 'flex-start',
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginLeft: 5,
+    color: COLORS.error,
+    marginTop: 8,
   }
 })

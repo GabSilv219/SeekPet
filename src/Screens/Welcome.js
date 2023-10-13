@@ -1,160 +1,122 @@
 import React from "react";
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Text, Image, TouchableOpacity, Pressable } from 'react-native';
+import COLORS from "../constants/colors";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import * as Animatable from 'react-native-animatable';
 
 import { useNavigation } from "@react-navigation/native";
 
 export default function Welcome(){
-  const Line = () => <View style={styles.line} />;
-  const Separator = () => <View style={styles.separator} />;
-
-
   const navigation = useNavigation();
 
   return(
-    <View style={styles.container}>
-      <View style={styles.containerImage}>
-        <Animatable.Image
-        delay={300}
-        animation='fadeIn' 
-        source={require('../assets/dogFoot.jpg')}
-        style={styles.img}
-        resizeMode="cover"
-        />
+    <SafeAreaView style={styles.container}>
+      <View style={styles.logo}>
+        <Text
+          style={{
+            fontWeight: 'bold',
+            fontSize: 40,
+            color: '#E8D532',
+            marginBottom: 40,
+          }}>
+          SeekPet
+        </Text>
+        
+        <Image style={styles.img} source={require('../assets/owner-idcard-2.png')}></Image>
+        <View style={styles.phrase}>
+          <Text style={styles.welcome}>Bem-vindo ao SeekPet!</Text>
+          <Text style={styles.title}>Dê ao seu Pet mais do que um nome, dê sua própria <Text style={styles.id}>Identidade!</Text></Text>
+        </View>
+
       </View>
 
-      <Animatable.View delay={400} animation="fadeInUp" style={styles.containerForm}>
-        <Line/>
-        <Text style={styles.welcome}>Bem-vindo ao SeekPet!</Text>
-        <Text style={styles.title}>Dê ao seu pet mais do que um nome, dê sua própria 
-          <Text style={styles.id}> Identidade!</Text>
+
+      <TouchableOpacity
+        style={{
+          backgroundColor: '#E8D532',
+          padding: 20,
+          width: '90%',
+          borderRadius: 10,
+          marginBottom: 20,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+        onPress={() => navigation.navigate('Login')}>
+        <Text
+          style={{
+            color: COLORS.black,
+            fontSize: 18,
+            textAlign: 'center',
+            fontWeight: 'bold',
+            
+          }}>
+          Começar
         </Text>
-        <Text style={styles.text}>Faça login para começar ou cadastre-se</Text>
+        <MaterialIcons name="arrow-forward-ios" size={22} color={COLORS.black} />
+      </TouchableOpacity>
 
-        <TouchableOpacity onPress={ () => navigation.navigate('Login')} style={styles.buttonLogin}>
-          <Text style={styles.buttonLoginText}>Acessar</Text>
-        </TouchableOpacity>
+      <View style={styles.footer}>
+        <Text style={{fontSize: 14, color: COLORS.black}}>Ainda não possui uma conta?</Text>
+        <Pressable onPress={() => navigation.navigate("SignUp")}>
+          <Text style={styles.loginNavigate}> 
+            Registre-se
+          </Text>
+        </Pressable>
+      </View>
 
-        <Separator/>
-        <Text style={styles.ou}>ou</Text>
-
-        <TouchableOpacity onPress={ () => navigation.navigate('SignUp')} style={styles.buttonSignUp}>
-          <Text style={styles.buttonSignUpText}>Cadastrar-se</Text>
-        </TouchableOpacity>
-
-      </Animatable.View>
-        
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E8D532', 
-  },
-  containerImage: {
-    flex: 1,
-    backgroundColor: '#E8D532',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  img: {
-    width: '100%',
-    height: '110%',
-  },
-  containerForm: {
-    flex: 1,
-    backgroundColor: '#FFF',
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-    paddingStart: '5%',
-    paddingEnd: '5%',
-  },
-  line: {
-    marginVertical: 15,
-    width: '25%',
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center',
-    borderBottomColor: '#a1a1a1',
-    borderBottomWidth: 1,
+    backgroundColor: '#fff',
+  },
+  logo: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  img: {
+    width: 360,
+    height: 270,
+  },
+  phrase: {
+    flex: 1,
+    marginTop: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   welcome: {
-    color: '#737373',
+    alignSelf: 'flex-start',
     fontSize: 15,
+    color: COLORS.darkGrey,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#737373',
+    color: COLORS.darkGrey, 
     marginTop: 10,
-    marginBottom: 30,
   },
   id: {
-    color: '#E8D532',
-  },
-  text: {
-    color: '#a1a1a1',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
-  buttonLogin: {
-    position: 'absolute',
-    backgroundColor: '#FFF',
-    borderWidth: 2,
-    borderColor: '#E8D532',
-    borderRadius: 50,
-    paddingVertical: 8,
-    width: '50%',
-    alignSelf: 'center',
-    bottom: '40%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonLoginText: {
-    fontSize: 18,
-    color: '#E8D532',
     fontWeight: 'bold',
+    color: COLORS.primary,
   },
-  buttonSignUp: {
-    position: 'absolute',
-    backgroundColor: '#FFF',
-    borderWidth: 2,
-    borderColor: '#1a73e8',
-    borderRadius: 50,
-    paddingVertical: 8,
-    width: '50%',
-    alignSelf: 'center',
-    bottom: '10%',
-    alignItems: 'center',
-    justifyContent: 'center',
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginBottom: 30
   },
-  buttonSignUpText: {
-    fontSize: 18,
-    color: '#1a73e8',
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 105,
-    width: '70%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    borderBottomColor: '#a1a1a1',
-    borderBottomWidth: 1,
-  },
-  ou: {
-    marginVertical: -115,
-    backgroundColor: "#FFF",
-    paddingLeft: 10,
-    paddingRight: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    fontSize: 12,
-    color: '#a1a1a1',
+  loginNavigate: {
+    fontSize: 14,
+    color: COLORS.primary,
+    fontWeight: "bold",
+    marginLeft: 6
   }
-})
+});

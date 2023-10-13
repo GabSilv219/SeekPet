@@ -1,5 +1,5 @@
 import { View, Text, Image, Pressable, TextInput, TouchableOpacity, StyleSheet, Keyboard, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import COLORS from '../constants/colors';
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox"
@@ -15,11 +15,12 @@ const schema = yup.object({
     .required("É necessário informar seu nome*"),
   email: yup.string()
     .email("É necessário informar um e-mail válido*").required("É necessário informar um e-mail*"),
-  cpf: yup.number().required("É necessário informar um CPF*"),
-  number: yup.number()
-    .min(8, "Informe um número de telefone válido*")
-    .max(12, "Informe um número de telefone válido*")
-    .required("É necessário informar um número de telefone*"),
+  cpf: yup.string()
+    .required("É necessário informar um CPF*")
+    .max(14, "Informe um CPF válido*"),
+  number: yup.string()
+    .required("É necessário informar um número de telefone*")
+    .max(15, "Informe um número de telefone válido*"),
   password: yup.string()
     .min(6, "A senha deve ter pelo menos 6 digítos*")
     .max(30, "A senha deve ter no máximo 12 digítos*")
@@ -28,21 +29,24 @@ const schema = yup.object({
     .min(6, "A senha deve ter pelo menos 6 digítos*")
     .max(30, "A senha deve ter no máximo 12 digítos*")
     .oneOf([yup.ref("password")],"As senhas devem ser iguais*").required("Confirme sua senha*"),
+  checkbox: yup.bool()
+    .oneOf([true], "Você deve aceitar os termos para prosseguir"),
 }) 
 
 export default function SignUp({navigation}){
-  const { control, watch, setValue, handleSubmit, formState: { errors }} = useForm({
+  const { control, handleSubmit, formState: { errors }} = useForm({
     resolver: yupResolver(schema)
   })
 
+  //Send data form and navigate to Login Page
+  const access = () => navigation.navigate("Login");
   function handleSignIn(data){
     console.log(data);
-  }
+    access();
+  }  
 
-  const [isPasswordShown, setIsPasswordShown] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
-  const [cell, setCell] = useState('');
-  const [cpf, setCpf] = useState('');
+  //Show or hide password digits
+  const [isPasswordShown, setIsPasswordShown] = useState(true);
   return(
     <ScrollView>
       <Pressable onPress={Keyboard.dismiss} style={styles.container}>
@@ -124,17 +128,18 @@ export default function SignUp({navigation}){
               <Controller
                 control={control}
                 name="cpf"
+                rules={{ required: true, maxLength: 14}}
                 render={({ field: { onChange, onBlur, value }}) => (
                   <TextInputMask
                     type={"cpf"} 
-                    onChange={onChange}
-                    onChangeText={ text => setCpf(text) }
+                    onChangeText={onChange} 
                     onBlur={onBlur}
-                    value={cpf}
+                    value={value}
                     placeholder='Digite seu CPF'
                     placeholderTextColor={COLORS.grey}
                     keyboardType='numeric'
                     style={{width: "100%"}}
+                    maxLength={14}
                   />   
                 )}
               />
@@ -154,37 +159,19 @@ export default function SignUp({navigation}){
             >
               <Controller
                 control={control}
-                name="ddi"
-                render={({ field: { onChange, onBlur, value }}) => (
-                  <TextInput
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    value={value}
-                    placeholder='+55'
-                    placeholderTextColor={COLORS.grey}
-                    keyboardType='numeric'
-                    style={styles.ddiText}
-                  />
-                )}
-              />
-              <Controller
-                control={control}
                 name='number'
+                rules={{ required: true, maxLength: 15}}
                 render={({ field: { onChange, onBlur, value }}) => (
                   <TextInputMask
                   type={"cel-phone"}
-                  options={{
-                    maskType: "BRL",
-                    withDDD: true,
-                    dddMask: "(99) "
-                  }}
-                  onChangeText={ text => setCell(text) }
+                  onChangeText={onChange}
                   onBlur={onBlur}
-                  value={cell}
+                  value={value}
                     placeholder="Informe seu número de telefone"
                     placeholderTextColor={COLORS.grey}
                     keyboardType='numeric'
                     style={{width: "80%"}}
+                    maxLength={15}
                   />
                 )}
               />
@@ -280,17 +267,25 @@ export default function SignUp({navigation}){
           </View>
 
           {/* Checkbox */}
-          <View style={styles.checkbox}>
-            <Checkbox 
-            style={{marginRight: 8}}
-            value={isChecked}
-            onValueChange={setIsChecked}
-            color={isChecked ? COLORS.secondary : undefined}
+          <View>
+            <Controller
+              control={control}
+              name='checkbox'
+              rules={{ required: true }}
+              render={({ field }) => (
+                <View  style={styles.checkbox}>
+                  <Checkbox
+                    style={{marginRight: 8}}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    color={COLORS.secondary}
+                  />
+                  <Text>Eu li e concordo com os termos e condições.</Text>
+                </View>
+              )}
             />
-
-            <Text>Eu li e concordo com os termos e condições.</Text>
+            {errors.checkbox && <Text style={styles.labelError}>{errors.checkbox.message}</Text>}
           </View>
-
           {/* Button Component*/}
           <Button
           onPress={handleSubmit(handleSignIn)}
@@ -361,6 +356,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white, 
+    marginTop: -20,
   },
   header: {
     flex: 1,
@@ -407,12 +403,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingLeft: 22,
-  },
-  ddiText: {
-    width: "12%",
-    borderRightWidth: 1,
-    borderLeftColor: COLORS.grey,
-    height: '100%'
   },
   viewPwd: {
     position: "absolute",

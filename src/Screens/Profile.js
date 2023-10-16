@@ -1,14 +1,10 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import COLORS from '../constants/colors';
 
-export default function Home() {
+export default function Profile() {
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Text style={styles.Title}>Home</Text>
-      </View>
-      <View>
-        
+        <Text style={styles.Title}>Profile</Text>
       </View>
     </ScrollView>
   );
@@ -17,10 +13,10 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    borderStartColor: '#fff',
     alignItems: "center",
     justifyContent: "center",
-    padding: 5
+    marginTop: 30
   },
   Title: {
     fontSize:22,

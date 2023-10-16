@@ -1,27 +1,74 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Feather } from '@expo/vector-icons';
+import COLORS from '../constants/colors';
+import { Entypo, Feather } from '@expo/vector-icons';
 
 import Home from '../Screens/Home';
-import SignIn from '../Screens/SignIn';
+import Notifications from '../Screens/Notifications';
+import Pets from '../Screens/Pets';
+import Post from '../Screens/Post';
+import Profile from '../Screens/Profile';
+
+import ButtonNew from '../components/ButtonNew';
 
 const Tab = createBottomTabNavigator();
 
 export default function TabRoutes(){
   return(
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator 
+      initialRouteName='Home' 
+      screenOptions={{ 
+        tabBarStyle: {
+          borderTopColor: 'transparent',
+          paddingBottom: 5,
+          paddingTop: 5,
+        },
+        tabBarInactiveTintColor: COLORS.grey,
+        tabBarActiveTintColor: COLORS.primary,
+      }}
+    >
+
       <Tab.Screen
-      name='Home'
+      name='SeekPet'
       component={Home}
       options={{
-        tabBarIcon: ({ color, size }) => <Feather name="home" color={color} size={size}/>,
+        tabBarIcon: ({ color, size }) => <Entypo name="home" color={color} size={size}/>,
         tabBarLabel: 'Início'
       }}
       />
+
       <Tab.Screen
-      name='SignIn'
-      component={SignIn}
+      name='Pet'
+      component={Pets}
       options={{
-        tabBarIcon: ({ color, size }) => <Feather name="user" color={color} size={size}/>,
+        headerShown: false,
+        tabBarIcon: ({ color, size }) => <Entypo name="baidu" color={color} size={size}/>,
+        tabBarLabel: 'Pets'
+      }}
+      />
+
+      <Tab.Screen
+      name='Post'
+      component={Post}
+      options={{
+        tabBarLabel: '',
+        tabBarIcon: ({ size, focused }) => <ButtonNew size={size} focused={focused} />,
+      }}
+      />
+
+      <Tab.Screen
+      name='Notifications'
+      component={Notifications}
+      options={{
+        tabBarIcon: ({ color, size }) => <Entypo name="bell" color={color} size={size}/>,
+        tabBarLabel: 'Notificações'
+      }}
+      />
+
+      <Tab.Screen
+      name='Profile'
+      component={Profile}
+      options={{
+        tabBarIcon: ({ color, size }) => <Entypo name="user" color={color} size={size}/>,
         tabBarLabel: 'Perfil'
       }}
       />

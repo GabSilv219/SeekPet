@@ -11,11 +11,14 @@ import * as yup from 'yup';
 // Validations
 const schema = yup.object({
   email: yup.string()
-    .email("É necessário informar um e-mail válido*").required("É necessário informar um e-mail*"),
+    .required("É necessário informar um e-mail*")
+    .email("É necessário informar um e-mail válido*"),
   password: yup.string()
+    .required("É necessário informar uma senha de acesso*")
+    .trim()
+    .matches(/^\S+$/, 'Informe uma senha válida*')
     .min(6, "A senha deve ter pelo menos 6 digítos*")
-    .max(30, "A senha deve ter no máximo 12 digítos*")
-    .required("É necessário informar uma senha de acesso*"),
+    .max(30, "A senha deve ter no máximo 12 digítos*"),
 }) 
 
 export default function SignUp({navigation}){
@@ -114,6 +117,18 @@ export default function SignUp({navigation}){
 
             </View>
             {errors.password && <Text style={styles.labelError}>{errors.password.message}</Text>}
+            {/* Forgot Password */}
+            <TouchableOpacity>
+              <Text 
+                style={[
+                  styles.forgotPWDText, {
+                    marginTop: errors.password ? -14 : 8
+                  }
+                ]}
+              >
+                Esqueceu sua senha?
+              </Text>
+            </TouchableOpacity>
           </View>
 
           {/* Checkbox */}
@@ -247,6 +262,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 12,
   },
+  forgotPWDText: {
+    display: 'flex',
+    position: 'absolute',
+    alignItems: 'flex-end',
+    alignSelf: 'flex-end',
+    fontSize: 12,
+    color: COLORS.secondary,
+  },
   checkbox: {
     flexDirection: "row",
     marginVertical: 6,
@@ -295,10 +318,10 @@ const styles = StyleSheet.create({
   },
   labelError: {
     alignSelf: 'flex-start',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     marginLeft: 5,
     color: COLORS.error,
-    marginTop: 8,
+    marginTop: 8
   }
 })

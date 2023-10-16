@@ -1,11 +1,11 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import COLORS from '../constants/colors';
 
-export default function Home() {
+export default function Notifications() {
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Text style={styles.Title}>Home</Text>
+        <Text style={styles.Title}>Notifications</Text>
       </View>
       <View>
         

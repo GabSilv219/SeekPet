@@ -1,9 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import DrawerRoutes from './drawer.routes';
+import TabRoutes from './tab.routes';
+
 import Welcome from '../Screens/Welcome';
 import Login from '../Screens/Login';
 import SignUp from '../Screens/SignUp';
-import Home from '../Screens/Home';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,9 +25,7 @@ export default function StackRoutes(){
       component={Login}
       options={{
         headerShadowVisible: false,
-        headerTitleStyle: {
-          color: "#fff",
-        }
+        title: ''
       }}
       />
 
@@ -34,20 +34,17 @@ export default function StackRoutes(){
       component={SignUp}
       options={{
         headerShadowVisible: false,
-        headerTitleStyle: {
-          color: "#fff",
-        }
+        title: ''
       }}
       />
 
       <Stack.Screen
       name='Home'
-      component={Home}
+      component={TabRoutes}
       options={{
+        headerShown: false,
         headerShadowVisible: false,
-        headerTitleStyle: {
-          color: "#fff",
-        }
+        title: ''
       }}
       />
     </Stack.Navigator>

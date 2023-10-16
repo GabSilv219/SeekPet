@@ -12,9 +12,12 @@ import { TextInputMask } from 'react-native-masked-text';
 // Validations
 const schema = yup.object({
   username: yup.string()
-    .required("É necessário informar seu nome*"),
+    .required("É necessário informar seu nome*")
+    .trim()
+    .min(3, "É necessário informar seu nome*"),
   email: yup.string()
-    .email("É necessário informar um e-mail válido*").required("É necessário informar um e-mail*"),
+    .required("É necessário informar um e-mail*")
+    .email("É necessário informar um e-mail válido*"),
   cpf: yup.string()
     .required("É necessário informar um CPF*")
     .max(14, "Informe um CPF válido*"),
@@ -22,15 +25,20 @@ const schema = yup.object({
     .required("É necessário informar um número de telefone*")
     .max(15, "Informe um número de telefone válido*"),
   password: yup.string()
+    .required("É necessário informar uma senha de acesso*")
+    .trim()
+    .matches(/^\S+$/, 'Informe uma senha válida*')
     .min(6, "A senha deve ter pelo menos 6 digítos*")
-    .max(30, "A senha deve ter no máximo 12 digítos*")
-    .required("É necessário informar uma senha de acesso*"),
+    .max(30, "A senha deve ter no máximo 12 digítos*"),
   confirm_password: yup.string()
+    .required("É necessário repetir a senha*")
+    .trim()
+    .matches(/^\S+$/, 'Informe uma senha válida*')
     .min(6, "A senha deve ter pelo menos 6 digítos*")
     .max(30, "A senha deve ter no máximo 12 digítos*")
     .oneOf([yup.ref("password")],"As senhas devem ser iguais*").required("Confirme sua senha*"),
   checkbox: yup.bool()
-    .oneOf([true], "Você deve aceitar os termos para prosseguir"),
+    .oneOf([true], "Você deve aceitar os termos para prosseguir*"),
 }) 
 
 export default function SignUp({navigation}){
@@ -79,6 +87,7 @@ export default function SignUp({navigation}){
                     placeholderTextColor={COLORS.grey}
                     keyboardType='email-address'
                     style={{width: "100%"}}
+                    maxLength={80}
                   />
                 )}
               />
@@ -456,7 +465,7 @@ const styles = StyleSheet.create({
   },
   labelError: {
     alignSelf: 'flex-start',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     marginLeft: 5,
     color: COLORS.error,

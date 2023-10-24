@@ -8,6 +8,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { TextInputMask } from 'react-native-masked-text';
+import { auth } from '@react-native-firebase/auth';
+
 
 // Validations
 const schema = yup.object({

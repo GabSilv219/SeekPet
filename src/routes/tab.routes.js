@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import COLORS from '../constants/colors';
-import { Entypo, Feather } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 
 import Home from '../Screens/Home';
 import Notifications from '../Screens/Notifications';
@@ -31,8 +31,9 @@ export default function TabRoutes(){
       name='SeekPet'
       component={Home}
       options={{
+        headerShown: false,
         tabBarIcon: ({ color, size }) => <Entypo name="home" color={color} size={size}/>,
-        tabBarLabel: 'Início'
+        tabBarLabel: 'Feed'
       }}
       />
 
@@ -50,6 +51,10 @@ export default function TabRoutes(){
       name='Post'
       component={Post}
       options={{
+        tabBarStyle: {
+          display: 'none'
+        },
+        headerShown: false,
         tabBarLabel: '',
         tabBarIcon: ({ size, focused }) => <ButtonNew size={size} focused={focused} />,
       }}
@@ -59,6 +64,7 @@ export default function TabRoutes(){
       name='Notifications'
       component={Notifications}
       options={{
+        headerShown: false,
         tabBarIcon: ({ color, size }) => <Entypo name="bell" color={color} size={size}/>,
         tabBarLabel: 'Notificações'
       }}
@@ -68,6 +74,7 @@ export default function TabRoutes(){
       name='Profile'
       component={Profile}
       options={{
+        headerShown: false,
         tabBarIcon: ({ color, size }) => <Entypo name="user" color={color} size={size}/>,
         tabBarLabel: 'Perfil'
       }}

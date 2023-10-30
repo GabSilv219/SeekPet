@@ -1,11 +1,10 @@
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import COLORS from '../constants/colors';
 import { Entypo } from '@expo/vector-icons';
-import api from '../Services/api';
-import User from '../datas/User';
 import moment from 'moment';
 import ButtonsPost from '../components/ButtonsPost';
+import axios from 'axios';
 
 posts = [
   { 
@@ -34,75 +33,53 @@ posts = [
   },
 ]
 
-export default class Home extends Component {
+export default function Home({ route }) {
+  const [posts, setPosts] = useState([]);
+
+  const fetchPosts = async () => {
+    try {
+      const responsePosts = await axios.get('https://api-seekpet-prisma.onrender.com/posts/todos');
+      const postsData = responsePosts.data;
+      const sortedPosts = postsData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setPosts(sortedPosts);
+    } catch (error) {
+      console.error('Erro ao buscar dados de posts:', error);
+    }
+  };
   
-  renderPost = post => {
-    return(
-      <View style={styles.feedItem}>
-        <Image source={post.avatar} style={styles.avatar} />
-        <View style={{flex: 1}}>
-          <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
-            <View>
-              <Text style={styles.name}>{post.name}</Text>
-              <Text style={styles.timestamp}>{moment(post.timestamp).fromNow()}</Text>
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  return (  
+    <View style={styles.container}>
+      <FlatList
+        style={styles.feed}
+        data={posts}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.feedItem}>
+            <Image source={{ uri: `https://api-seekpet-prisma.onrender.com/users/${item.user.avatar}` }} style={styles.avatar} />
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <View>
+                  <Text style={styles.name}>{item.user.nome}</Text>
+                  <Text style={styles.timestamp}>{moment(item.createdAt).fromNow()}</Text>
+                </View>
+                <TouchableOpacity>
+                  <Entypo name="dots-three-horizontal" size={24} color="#73788B" />
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.post}>{item.text}</Text>
+              <Image source={{ uri: `https://api-seekpet-prisma.onrender.com/posts/${item.image}` }} style={styles.postImage} resizeMode='cover' />
+              <ButtonsPost />
             </View>
-
-            <TouchableOpacity>
-              <Entypo name="dots-three-horizontal" size={24} color="#73788B" />
-            </TouchableOpacity>
           </View>
-
-          <Text style={styles.post}>{post.text}</Text>
-
-          <Image source={post.image}  style={styles.postImage} resizeMode='cover' />
-
-          <ButtonsPost/>
-
-        </View>
-      </View>
-    )
-  }
-
-  // constructor(props){
-  //   super(props);
-  //   this.state = {
-  //     users: []
-  //   }
-  // }
-
-  // async componentDidMount(){
-  //   const response = await api.get("/");
-  //    this.setState({
-  //     users: response.data
-  //   });
-  // }
-
-  render(){
-    return (
-      <View style={styles.container}>
-        {/* <View style={styles.header}>
-          <Text style={styles.headerTitle}>Feed</Text>
-        </View> */}
-
-        <FlatList 
-          style={styles.feed} 
-          data={posts} 
-          renderItem={({item}) => this.renderPost(item)} 
-          keyExtractor={item => item.id}
-          showsVerticalScrollIndicator={false}
-        />
-  
-        {/* <FlatList 
-          style={styles.feed} 
-          data={this.state.users}
-          keyExtractor={item => item.id}
-          renderItem={({item}) => <User data={item}/>} 
-          showsVerticalScrollIndicator={false}
-        /> */}
+        )}
+      />
     </View>
-    );
-  }
-  }
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

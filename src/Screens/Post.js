@@ -1,31 +1,13 @@
-import { View, Text, SafeAreaView ,StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, TurboModuleRegistry } from 'react-native';
+import { View, Text, SafeAreaView ,StyleSheet, ScrollView, TouchableOpacity, Image, TextInput } from 'react-native';
 import React, { Component, useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import Constants from 'expo-constants';
-import * as Permissions from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
+import axios from 'axios';
 import COLORS from '../constants/colors';
 
 export default function Post({navigation}) {
   const [image, setImage] = useState();
-  state = {
-    text: "",
-    image: null
-  };
-
-  // componentDidMount() {
-  //   this.getPhotoPermission();
-  // }
-
-  // getPhotoPermission = async () => {
-  //   if (Constants.platform.android) {
-  //     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-
-  //     if (status != "granted") {
-  //       alert("Permita que o SeekPet acesse seu armazenamento interno!");
-  //     }
-  //   }
-  // }
+  const [text, setText] = useState("");
 
   pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -41,6 +23,30 @@ export default function Post({navigation}) {
     }
   }
 
+  const sendPost = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('text', text);
+      formData.append('image', {
+        uri: image,
+        type: 'image/jpeg',
+        name: 'image.jpg',
+      });
+  
+      const response = await axios.post('https://api-seekpet-prisma.onrender.com/create-post/1', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      console.log('Resposta da API:', response.data);
+      // Você pode tratar a resposta da API aqui
+      navigation.goBack();
+    } catch (error) {
+      console.error('Erro ao enviar o post para a API:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -48,7 +54,7 @@ export default function Post({navigation}) {
           <Ionicons name='md-arrow-back' size={24} color={COLORS.grey} />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={sendPost}>
           <Text style={{ fontWeight: "500" }}>Post</Text>
         </TouchableOpacity>
       </View>
@@ -56,6 +62,8 @@ export default function Post({navigation}) {
       <View style={styles.inputContainer}>
         <Image source={require("../assets/person1.jpg")} style={styles.avatar} />
         <TextInput 
+          value={text}
+          onChangeText={setText}
           autoFocus={true} 
           multiline={true} 
           numberOfLines={4} 
@@ -107,7 +115,5 @@ const styles = StyleSheet.create({
     height: 250,
     borderRadius: 5,
     marginVertical: 16,
-    borderWidth: 1,
-    borderColor: COLORS.lightGrey,
   }
 })

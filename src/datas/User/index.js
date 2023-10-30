@@ -7,11 +7,15 @@ export default class User extends Component{
   render(){
     return(
       <View style={styles.feedItem}>
-        <Image source={{uri: 'https://api-seekpet.onrender.com/uploads/'}} style={styles.avatar}/>
+        <Image source={{uri: `https://api-seekpet.onrender.com/uploads/${this.props.data.avatar}`}} style={styles.avatar}/>
         <View style={{flex: 1}}>
           <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
             <View>
               <Text style={styles.name}>{this.props.data.name}</Text>
+              <Text style={styles.name}>{this.props.data.avatar}</Text>
+              <Text style={styles.name}>{this.props.data.cpf}</Text>
+              <Text style={styles.name}>{this.props.data.tel}</Text>
+              <Text style={styles.name}>{this.props.data.pwd}</Text>
               <Text style={styles.timestamp}>{this.props.data.email}</Text>
             </View>
           </View>

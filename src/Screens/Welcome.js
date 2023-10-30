@@ -3,13 +3,13 @@ import { SafeAreaView, StyleSheet, View, Text, Image, TouchableOpacity, Pressabl
 import COLORS from "../constants/colors";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import * as Animatable from 'react-native-animatable';
+// import * as Animatable from 'react-native-animatable';
 
 import { useNavigation } from "@react-navigation/native";
 
 export default function Welcome(){
   const navigation = useNavigation();
-
+  
   return(
     <SafeAreaView style={styles.container}>
       <View style={styles.logo}>

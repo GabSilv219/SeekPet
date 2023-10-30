@@ -7,6 +7,7 @@ import Button from '../components/Button';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 // Validations
 const schema = yup.object({
@@ -22,9 +23,21 @@ const schema = yup.object({
 }) 
 
 export default function SignUp({navigation}){
+  state = {
+    email: "",
+    password: "",
+    errorMessage: null 
+  }
+
   const { control, handleSubmit, formState: { errors }} = useForm({
     resolver: yupResolver(schema)
   })
+
+  handleLogin = () => {
+    const {email, password} = this.state
+
+    signInWithEmailAndPassword(email, password).catch(error => this.setState({errorMessage: error.message}))
+  }
 
   //Send data form and navigate to Login Page
   const access = () => navigation.navigate("Home");
@@ -154,6 +167,7 @@ export default function SignUp({navigation}){
 
           {/* Button Component*/}
           <Button
+            // onPress={handleSubmit(handleSignIn)}
             onPress={handleSubmit(handleSignIn)}
             title="Acessar"
             filled

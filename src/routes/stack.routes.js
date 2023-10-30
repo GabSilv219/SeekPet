@@ -1,11 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import DrawerRoutes from './drawer.routes';
 import TabRoutes from './tab.routes';
 
 import Welcome from '../Screens/Welcome';
 import Login from '../Screens/Login';
 import SignUp from '../Screens/SignUp';
+import RegisterPet from '../Screens/RegisterPet';
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +43,15 @@ export default function StackRoutes(){
       component={TabRoutes}
       options={{
         headerShown: false,
+        headerShadowVisible: false,
+        title: ''
+      }}
+      />
+
+      <Stack.Screen
+      name='RegisterPet'
+      component={RegisterPet}
+      options={{
         headerShadowVisible: false,
         title: ''
       }}

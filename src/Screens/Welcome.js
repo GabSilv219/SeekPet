@@ -58,7 +58,7 @@ export default function Welcome(){
 
       <View style={styles.footer}>
         <Text style={{fontSize: 14, color: COLORS.black}}>Ainda não possui uma conta?</Text>
-        <Pressable onPress={() => navigation.navigate("SignUp")}>
+        <Pressable onPress={() => navigation.navigate("SignUp_Screen1")}>
           <Text style={styles.loginNavigate}> 
             Registre-se
           </Text>

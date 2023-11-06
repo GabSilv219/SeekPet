@@ -1,21 +1,28 @@
 import { View, Text, StyleSheet, ScrollView, Image, ImageBackground, TouchableOpacity, FlatList } from 'react-native';
-import React, { Component, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import COLORS from '../constants/colors';
 import axios from 'axios';
 import { Feather } from '@expo/vector-icons';
-
+import { AuthContext } from '../contexts/auth';
 import { useNavigation } from "@react-navigation/native";
+import QRCode from 'react-native-qrcode-svg';
 
-export default function Pet() {
+export default function Pet({route}) {
   const navigation = useNavigation();
   const [pets, setPets] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const {userInfo} = useContext(AuthContext);
 
   const fetchPets = async () => {
     try {
       const responsePets = await axios.get('https://api-seekpet-prisma.onrender.com/pets/todos');
       const petsData = responsePets.data;
       const sortedPets = petsData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      setPets(sortedPets);
+
+      const userPets = sortedPets.filter((pets) => pets.donoId === userInfo.id);
+
+      setPets(userPets);
     } catch (error) {
       console.error('Erro ao buscar dados de pets:', error);
     }
@@ -24,6 +31,20 @@ export default function Pet() {
   useEffect(() => {
     fetchPets();
   }, []);
+
+  const generateQRCodeURL = (petId) => {
+    return `https://api-seekpet-prisma.onrender.com/pet/${petId}`;
+  };
+
+  const generateQRCodeURLForPet = (petId) => {
+    return generateQRCodeURL(petId);
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchPets(10);
+    setRefreshing(false);
+  }
 
   return (
       <View style={styles.container}>
@@ -35,12 +56,13 @@ export default function Pet() {
         </View>
         
         <FlatList 
+          refreshing={refreshing} onRefresh={handleRefresh}
           style={styles.feed}
           data={pets}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={styles.ids}>
-              <TouchableOpacity style={styles.id}>
+              <TouchableOpacity style={styles.id} onPress={() => navigation.navigate("PetScreen", {petData: item})}>
                 <Image style={styles.photo} source={{uri: `https://api-seekpet-prisma.onrender.com/pets/${item.foto}`}}></Image>
                 <View style={styles.info}>
                   <View style={[styles.fieldRow, {marginBottom: 0}]}>
@@ -56,11 +78,14 @@ export default function Pet() {
                     <Text style={styles.field}>Espécie:</Text>
                     <Text style={styles.data}>{item.especie}</Text>
                   </View>
-                  <View style={styles.fieldRow}>
+                  <View style={[styles.fieldRow, {marginBottom: 0}]}>
                     <Text style={styles.field}>Raça:</Text>
                     <Text style={styles.data}>{item.raca}</Text>
                   </View>
                 </View>
+                <TouchableOpacity style={{marginLeft: -35, marginTop: 90}} onPress={() => navigation.navigate("QRCodeScreen", {petId: item.id})}>
+                    <QRCode value={generateQRCodeURLForPet(item.id)} size={40}/>
+                </TouchableOpacity>
               </TouchableOpacity>
             </View>
           )}
@@ -78,7 +103,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginLeft: 30,
-    marginTop: 120,
+    marginTop: 80,
   },
   Title: {
     fontSize:45,
@@ -93,9 +118,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     width: 70,
     height: 70,
-    borderRadius: 5,
+    borderRadius: 100,
     marginVertical: 0,
-    marginLeft: 20,
+    marginLeft: 50,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 10
@@ -136,8 +161,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   fieldRow: {
-    flexDirection: 'row',
-    // justifyContent: 'space-between', 
+    flexDirection: 'row', 
     marginBottom: 5,
   },
   field: {

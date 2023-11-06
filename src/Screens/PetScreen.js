@@ -1,5 +1,5 @@
 import { View, Text, Image, Pressable, TextInput, TouchableOpacity, StyleSheet, Keyboard, ScrollView, ActivityIndicator } from 'react-native'
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import COLORS from '../constants/colors';
 import { Ionicons } from "@expo/vector-icons";
 import { useForm, Controller } from 'react-hook-form';
@@ -35,10 +35,12 @@ const schema = yup.object({
     .max(3, "Resposta inválida Inválida*"),
 }) 
 
-export default function RegisterPet({navigation, route}){
+export default function PetScreen({navigation, route}){
   const { control, handleSubmit, formState: { errors }} = useForm({
     resolver: yupResolver(schema)
   })
+
+  const { petData } = route.params;
 
   const {userInfo} = useContext(AuthContext);
 
@@ -52,16 +54,16 @@ export default function RegisterPet({navigation, route}){
 
   const [loading, setLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(null);
-  const [foto, setFoto] = useState();
   const [fotoVisible, setFotoVisible] = useState(false);
-  const [nome, setNome] = useState("");
-  const [idade, setIdade] = useState("");
-  const [especie, setEspecie] = useState("");
-  const [raca, setRaca] = useState("");
-  const [sexo, setSexo] = useState("");
-  const [doenca, setDoenca] = useState("");
-  const [vacina, setVacina] = useState("");
-  const [castrado, setCastrado] = useState("");
+  const [foto, setFoto] = useState(); 
+  const [nome, setNome] = useState(petData.nome || "");
+  const [idade, setIdade] = useState(petData.idade || "");
+  const [especie, setEspecie] = useState(petData.especie || "");
+  const [raca, setRaca] = useState(petData.raca || "");
+  const [sexo, setSexo] = useState(petData.sexo || "");
+  const [doenca, setDoenca] = useState(petData.doenca || "");
+  const [vacina, setVacina] = useState(petData.vacina || "");
+  const [castrado, setCastrado] = useState(petData.castrado || "");
 
   const pickFoto = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -78,7 +80,7 @@ export default function RegisterPet({navigation, route}){
     }
   }
 
-  const sendPost = async () => {
+  const sendPut = async () => {
     try {
       const formData = new FormData();
       formData.append('nome', nome);
@@ -96,7 +98,7 @@ export default function RegisterPet({navigation, route}){
         name: 'foto.jpg'
       });
   
-      const response = await axios.post(`https://api-seekpet-prisma.onrender.com/registrar-pet/${userInfo.id}`, formData, {
+      const response = await axios.put(`https://api-seekpet-prisma.onrender.com/update-pet/${petData.id}/${userInfo.id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -105,42 +107,24 @@ export default function RegisterPet({navigation, route}){
       console.log('Resposta da API:', response.data);
       navigation.goBack();
     } catch (error) {
-      console.error('Erro ao enviar o post para a API:', error);
+      console.error('Erro ao enviar o put para a API:', error);
     }
   };
 
   function sendData(){
-    sendPost();
-  } 
+    sendPut();
+  }  
 
   return(
     <ScrollView>
       <Pressable onPress={Keyboard.dismiss} style={styles.container}>
         <View style={styles.header}>
           <View style={styles.header2}>
-            <Text style={styles.text}>Dê uma identidade ao seu pet! 🐕</Text>
           </View>
-
-          {/* <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Image
-            source={{ uri: foto }}
-            style={styles.new}
-            />
-            <TouchableOpacity onPress={this.pickFoto} style={{ marginTop: 20, flexDirection: "row" }}>
-              <Text> Escolher imagem </Text>
-              <Ionicons name='md-camera' size={32} color='#D8D8DB' style={{marginVertical: -8, marginLeft: 5}} />
-            </TouchableOpacity>
-          </View> */}
 
           <TouchableOpacity
             style={styles.new}
             onPress={pickFoto}
-            // onPress={() => {
-            //   if (!fotoVisible) {
-            //     this.pickFoto();
-            //   }
-            //   this.pickFoto();
-            // }}
           >
             <View>
               {fotoVisible ? (
@@ -152,7 +136,7 @@ export default function RegisterPet({navigation, route}){
                 <Ionicons name='md-camera' size={32} color='#D8D8DB' />
               )}
             </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
 
           <View style={{flexDirection: 'row'}}>
             <Text style={styles.emailTitleText}>Nome</Text>
@@ -468,7 +452,6 @@ export default function RegisterPet({navigation, route}){
             }
           </View>
 
-
           {/* Button Component*/}
           <Button
               onPress={handleSubmit (() => {
@@ -500,7 +483,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fafafa',
-    paddingBottom: 30
+    paddingBottom: 75
   },
   header: {
     flex: 1,

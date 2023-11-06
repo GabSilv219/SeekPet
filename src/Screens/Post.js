@@ -1,13 +1,18 @@
-import { View, Text, SafeAreaView ,StyleSheet, ScrollView, TouchableOpacity, Image, TextInput } from 'react-native';
-import React, { Component, useEffect, useState } from 'react';
+import { View, Text, SafeAreaView ,StyleSheet, TouchableOpacity, Image, TextInput, ActivityIndicator } from 'react-native';
+import React, { useContext, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import COLORS from '../constants/colors';
+import { AuthContext } from '../contexts/auth';
+import PostButton from '../components/PostButton';
 
 export default function Post({navigation}) {
   const [image, setImage] = useState();
   const [text, setText] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const {userInfo} = useContext(AuthContext);
 
   pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -33,7 +38,7 @@ export default function Post({navigation}) {
         name: 'image.jpg',
       });
   
-      const response = await axios.post('https://api-seekpet-prisma.onrender.com/create-post/1', formData, {
+      const response = await axios.post(`https://api-seekpet-prisma.onrender.com/create-post/${userInfo.id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -54,13 +59,25 @@ export default function Post({navigation}) {
           <Ionicons name='md-arrow-back' size={24} color={COLORS.grey} />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={sendPost}>
-          <Text style={{ fontWeight: "500" }}>Post</Text>
-        </TouchableOpacity>
+        <PostButton 
+          onPress={() => {
+            setLoading(true); 
+            sendPost();
+          }}
+          title={
+            loading ? (
+              <ActivityIndicator size={30} color={COLORS.lightGrey} style={{alignSelf: 'center'}}/>
+           ) : (
+             'Post'
+           )
+          }
+          disabled={loading}
+        >
+        </PostButton>  
       </View>
 
       <View style={styles.inputContainer}>
-        <Image source={require("../assets/person1.jpg")} style={styles.avatar} />
+        <Image source={{uri: `https://api-seekpet-prisma.onrender.com/users/${userInfo.avatar}`}} style={styles.avatar} />
         <TextInput 
           value={text}
           onChangeText={setText}
@@ -77,7 +94,7 @@ export default function Post({navigation}) {
       </TouchableOpacity>
 
       <View style={{ marginHorizontal: 32, marginTop: 32, height: 150 }}>
-        <Image source={{uri: image}} style={styles.postImage} resizeMode='cover'></Image>
+        <Image source={{uri: image}} style={styles.postImage} resizeMode='cover'/>
       </View>
     </SafeAreaView>
   );  

@@ -1,13 +1,13 @@
-import { View, Text, Image, Pressable, TextInput, TouchableOpacity, StyleSheet, Keyboard, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, Image, Pressable, TextInput, TouchableOpacity, StyleSheet, Keyboard, ScrollView, ActivityIndicator } from 'react-native'
+import React, { useState, useContext } from 'react'
 import COLORS from '../constants/colors';
-import { Ionicons } from "@expo/vector-icons";
-import Checkbox from "expo-checkbox"
+import { Ionicons } from "@expo/vector-icons";             
 import Button from '../components/Button';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { InputLogin } from '../components/Inputs';
+import { AuthContext } from '../contexts/auth';
 
 // Validations
 const schema = yup.object({
@@ -22,101 +22,82 @@ const schema = yup.object({
     .max(30, "A senha deve ter no máximo 12 digítos*"),
 }) 
 
-export default function SignUp({navigation}){
-  state = {
-    email: "",
-    password: "",
-    errorMessage: null 
-  }
+export default function Login({navigation}){
+  const [email, setEmail] = useState(null);
+  const [senha, setSenha] = useState(null);
+  const [isPasswordShown, setIsPasswordShown] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const { control, handleSubmit, formState: { errors }} = useForm({
     resolver: yupResolver(schema)
   })
 
-  handleLogin = () => {
-    const {email, password} = this.state
+  const {login} = useContext(AuthContext);
 
-    signInWithEmailAndPassword(email, password).catch(error => this.setState({errorMessage: error.message}))
-  }
+  console.log(login); 
 
-  //Send data form and navigate to Login Page
-  const access = () => navigation.navigate("Home");
-  function handleSignIn(data){
-    console.log(data);
-    access();
-  }  
-
-  //Show or hide password digits
-  const [isPasswordShown, setIsPasswordShown] = useState(true);
-  
   return(
-    <Pressable onPress={Keyboard.dismiss} style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.header2}>
-          <Text style={styles.title}>Olá, Bem-vindo de volta 👋</Text>
-          <Text style={styles.text}>Sentimos sua falta!</Text>
-        </View>
+    <ScrollView>
+      <Pressable onPress={Keyboard.dismiss} style={styles.container}>
+        <View style={styles.login}>
+          <Image source={require("../assets/owner-dog.png")} style={{width: 303, height: 300, alignSelf: 'center', marginRight: 25}} />
 
-        {/* Form */}
-        {/*E-mail Input*/}
-        <View style={styles.form}>
-          <Text style={styles.emailTitleText}>E-mail</Text>
-
-          <View 
-            style={[
-              styles.input, {
-                borderColor: errors.email ? COLORS.error : COLORS.grey
-              }
-            ]}
-          >
-            <Controller
-              control={control}
-              name="email"
-              render={({ field: { onChange, onBlur, value }}) => (
-                <TextInput 
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  value={value}
-                  placeholder='Digite seu e-mail'
-                  placeholderTextColor={COLORS.grey}
-                  keyboardType='email-address'
-                  style={{width: "100%"}}
-                />  
-              )}
-            />
-          </View>
-          {errors.email && <Text style={styles.labelError}>{errors.email?.message}</Text>}
-        </View>
-
-          {/* Password Input */}
+          <Text style={styles.title}>Entrar</Text>
           <View style={styles.form}>
-            <Text style={styles.emailTitleText}>Senha</Text>
-
-            <View 
-              style={[
-                styles.input, {
-                  borderColor: errors.confirm_password ? COLORS.error : COLORS.grey
-                }]}
-            >
+            <View>
               <Controller
                 control={control}
-                name='password'
+                name="email"
                 render={({ field: { onChange, onBlur, value }}) => (
-                  <TextInput 
-                    onChangeText={onChange}
+                  <InputLogin 
+                    onChangeText={(text) => {setEmail(text); onChange(text)}}
                     onBlur={onBlur}
-                    value={value}
-                    placeholder='Insira uma senha'
-                    placeholderTextColor={COLORS.grey}
+                    value={email}
+                    placeholder='Email'
+                  />
+                )}
+              />
+              <View style={styles.inputField}></View> 
+
+              <Ionicons name="person" size={20} color="#8A8F9E" style={styles.iconEmail}/>
+            </View>
+
+            {errors.email && <Text style={styles.labelError}>{errors.email?.message}</Text>}
+
+            <View style={{marginTop: 32}}>
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, onBlur, value }}) => (
+                  <InputLogin 
+                    onChangeText={(text) => {setSenha(text); onChange(text)}}
+                    onBlur={onBlur}
+                    value={senha}
+                    placeholder='Senha'
+                    style={{marginLeft: 25}}
                     secureTextEntry={isPasswordShown}
-                    style={{width: "100%"}}
                   />
                 )}
               />
 
-              {/* Shown Password Function button */}
+              <View style={styles.inputField}></View>
+
+              <Ionicons name="lock-closed" size={20} color="#8A8F9E" 
+                style={[
+                  styles.iconPWD, {
+                    bottom: errors.password ? 31 : 10
+                  }
+                ]}
+              />
+              
+              {errors.password && <Text style={styles.labelError}>{errors.password.message}</Text>}
+
               <TouchableOpacity 
-                style={styles.viewPwd}
+                style={[
+                  styles.viewPwd, {
+                    bottom: errors.password ? 25 : 5
+                  }
+                ]}
                 onPress={() => setIsPasswordShown(!isPasswordShown)}
               >
                 {
@@ -125,109 +106,56 @@ export default function SignUp({navigation}){
                   ) : (
                     <Ionicons name="eye" size={24} color={COLORS.grey}/>
                   )
-                }
+                  }
               </TouchableOpacity>
 
+              <TouchableOpacity>
+                <Text 
+                  style={[
+                    styles.forgotPWDText, {
+                      marginTop: errors.password ? -14 : 15
+                    }
+                  ]}
+                  >
+                  Esqueceu sua senha?
+                </Text>
+              </TouchableOpacity>
+            
             </View>
-            {errors.password && <Text style={styles.labelError}>{errors.password.message}</Text>}
-            {/* Forgot Password */}
-            <TouchableOpacity>
-              <Text 
-                style={[
-                  styles.forgotPWDText, {
-                    marginTop: errors.password ? -14 : 8
-                  }
-                ]}
-              >
-                Esqueceu sua senha?
-              </Text>
-            </TouchableOpacity>
+            
           </View>
 
-          {/* Checkbox */}
-          <View>
-            <Controller
-              control={control}
-              name='checkbox'
-              rules={{ required: true }}
-              render={({ field }) => (
-                <View  style={styles.checkbox}>
-                  <Checkbox
-                    style={{marginRight: 8}}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    color={COLORS.secondary}
-                  />
-                  <Text>Lembrar de mim.</Text>
-                </View>
-              )}
-            />
-          </View>
-
-
-          {/* Button Component*/}
           <Button
-            // onPress={handleSubmit(handleSignIn)}
-            onPress={handleSubmit(handleSignIn)}
-            title="Acessar"
-            filled
-            style={{
-              marginTop: 18,
-              marginBottom: 4,
-            }}
-          />
-
-          {/* Others register options */}
-          {/* Lines */}
-          <View style={styles.lines}>
-            <View style={styles.line}/>
-            <Text style={{fontSize: 14}}>Ou acessar com</Text>
-            <View style={styles.line}/>
-          </View>
-
-          {/* Buttons */}
-          {/* Facebook */}
-          <View style={styles.rowButtons}>
-            <TouchableOpacity
-              onPress={() => console.log("Pressed")}
-              style={styles.othersButton}
+              onPress={handleSubmit (() => {
+                setLoading(true);
+                login(email, senha);
+              })}
+              filled
+              title={
+                loading ? (
+                  <ActivityIndicator size={20} color={COLORS.white} style={{paddingTop: 5}}/>
+                ) : (
+                  "Enviar"
+                )}
+              style={{
+                marginTop: 18,
+                marginBottom: 4,
+              }}
+              disabled={loading}
             >
-              <Image
-                source={require("../assets/facebook.png")}
-                style={styles.imagesButton}
-                resizeMode='contain'
-              />
-              <Text>Facebook</Text>
+            </Button>
 
-            </TouchableOpacity>
-
-            {/* Google */}
-            <TouchableOpacity
-              onPress={() => console.log("Pressed")}
-              style={styles.othersButton}
-            >
-              <Image
-                source={require("../assets/google.png")}
-                style={styles.imagesButton}
-                resizeMode='contain'
-              />
-              <Text>Google</Text>
-            </TouchableOpacity>
-
-          </View>
-
-          {/* Already have an account? */}
-          <View style={styles.footer}>
-            <Text style={{fontSize: 16, color: COLORS.black}}>Ainda não possui uma conta?</Text>
-            <Pressable onPress={() => navigation.navigate("SignUp")}>
-              <Text style={styles.loginNavigate}> 
-                Registre-se
-              </Text>
-            </Pressable>
-          </View>
-
+            <View style={styles.footer}>
+              <Text style={{fontSize: 16, color: COLORS.black}}>Ainda não possui uma conta?</Text>
+              <Pressable onPress={() => navigation.navigate("SignUp_Screen1")}>
+                <Text style={styles.loginNavigate}> 
+                  Registre-se
+                </Text>
+              </Pressable>
+            </View>
         </View>
-    </Pressable>
+      </Pressable>
+    </ScrollView>
   )
 }
 
@@ -236,45 +164,40 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF", 
     marginTop: -10,
+    paddingBottom: 25
   },
-  header: {
+  login: {
     flex: 1,
     marginHorizontal: 22,
-  },
-  header2: {
-    marginVertical: 22,
+    marginTop: -10
   },
   title: {
-    fontSize: 22,
+    marginTop: 32,
+    fontSize: 40,
     fontWeight: 'bold',
-    marginVertical: 12,
-    color: COLORS.black,
-  },
-  text: {
-    fontSize: 16,
-    color: COLORS.black,
+    color: COLORS.primary,
+    marginBottom: 40,
+    textAlign: 'center'
   },
   form: {
-    marginBottom: 12,
+    marginBottom: 48,
+    marginHorizontal: 10
   },
-  emailTitleText: {
-    fontSize: 16,
-    fontWeight: '400',
-    marginVertical: 8,
-  },
-  input: {
-    width: '100%',
-    height: 48, 
-    borderWidth: 1,
-    borderColor: COLORS.grey,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingLeft: 22,
+  inputField: {
+    borderBottomColor: "#8A8F9E",
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   viewPwd: {
     position: "absolute",
     right: 12,
+    // bottom: 5,
+  },
+  iconEmail: {
+    position: "absolute",
+    bottom: 10,
+  },
+  iconPWD: {
+    position: "absolute",
   },
   forgotPWDText: {
     display: 'flex',
@@ -283,41 +206,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     fontSize: 12,
     color: COLORS.secondary,
-  },
-  checkbox: {
-    flexDirection: "row",
-    marginVertical: 6,
-  },
-  lines: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical:  20
-  },
-  line: {
-    flex: 1,
-    height: 1,
-    backgroundColor: COLORS.lightGrey,
-    marginHorizontal: 10
-  },
-  othersButton: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    height: 52,
-    borderWidth: 1,
-    borderColor: COLORS.lightGrey,
-    marginRight: 4,
-    borderRadius: 10
-  },
-  rowButtons: {
-    flexDirection: "row",
-    justifyContent: "center"
-  },
-  imagesButton: {
-    height: 36,
-    width: 36,
-    marginRight: 8
   },
   footer: {
     flexDirection: "row",

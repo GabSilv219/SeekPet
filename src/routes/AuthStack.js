@@ -1,11 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import TabRoutes from './tab.routes';
-
 import Welcome from '../Screens/Welcome';
 import Login from '../Screens/Login';
-import SignUp from '../Screens/SignUp';
-import RegisterPet from '../Screens/RegisterPet';
+import SignUp_Screen1 from '../Screens/SignUp_Screen1';
+import SignUp_Screen2 from '../Screens/SignUp_Screen2';
+import SignUp_Screen3 from '../Screens/SignUp_Screen3';
+import SignUp_Screen4 from '../Screens/SignUp_Screen4';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,30 +30,38 @@ export default function StackRoutes(){
       />
 
       <Stack.Screen
-      name='SignUp'
-      component={SignUp}
+      name='SignUp_Screen1'
+      component={SignUp_Screen1}
       options={{
         headerShadowVisible: false,
-        title: ''
+        title: 'Criar Conta'
       }}
       />
 
       <Stack.Screen
-      name='Home'
-      component={TabRoutes}
+      name='SignUp_Screen2'
+      component={SignUp_Screen2}
       options={{
-        headerShown: false,
         headerShadowVisible: false,
-        title: ''
+        title: 'Criar Conta'
       }}
       />
 
       <Stack.Screen
-      name='RegisterPet'
-      component={RegisterPet}
+      name='SignUp_Screen3'
+      component={SignUp_Screen3}
       options={{
         headerShadowVisible: false,
-        title: ''
+        title: 'Criar Conta'
+      }}
+      />
+
+      <Stack.Screen
+      name='SignUp_Screen4'
+      component={SignUp_Screen4}
+      options={{
+        headerShadowVisible: false,
+        title: 'Criar Conta'
       }}
       />
     </Stack.Navigator>

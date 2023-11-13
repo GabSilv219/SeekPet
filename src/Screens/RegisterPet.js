@@ -447,7 +447,7 @@ export default function RegisterPet({navigation, route}){
                       placeholder='Castrado'  
                       placeholderTextColor={COLORS.grey}
                       keyboardType='default'
-                      style={{width: "100%"}}
+                      style={{width: "100%", textTransform: 'uppercase'}}
                       maxLength={3}
                     />
                   )}

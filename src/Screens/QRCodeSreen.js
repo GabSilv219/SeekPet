@@ -7,7 +7,7 @@ const QRCodeScreen = ({ route }) => {
   const { petId } = route.params;
 
   const handleLinkPress = () => {
-    const url = `https://api-seekpet-prisma.onrender.com/pet/${petId}`;
+    const url = `https://seekpet-react.onrender.com/pet/${petId}`;
 
     Linking.openURL(url)
       .catch((error) => console.error(`Erro ao abrir a URL: ${error}`));
@@ -15,7 +15,7 @@ const QRCodeScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <QRCode value={`https://api-seekpet-prisma.onrender.com/pet/${petId}`} size={300} />
+      <QRCode value={`https://seekpet-react.onrender.com/pet/${petId}`} size={300} />
       <View style={{flexDirection: 'row'}}>
         <TouchableOpacity>
           <Text style={styles.downloadButton}>Download QR Code</Text>

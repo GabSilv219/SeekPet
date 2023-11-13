@@ -33,7 +33,7 @@ export default function Pet({route}) {
   }, []);
 
   const generateQRCodeURL = (petId) => {
-    return `https://api-seekpet-prisma.onrender.com/pet/${petId}`;
+    return `https://seekpet-react.onrender.com/pet/${petId}`;
   };
 
   const generateQRCodeURLForPet = (petId) => {

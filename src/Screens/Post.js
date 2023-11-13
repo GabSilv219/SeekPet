@@ -63,6 +63,7 @@ export default function Post({navigation}) {
           onPress={() => {
             setLoading(true); 
             sendPost();
+            // setLoading(false);
           }}
           title={
             loading ? (

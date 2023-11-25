@@ -1,7 +1,7 @@
 import { View, Text, Image, Pressable, TextInput, TouchableOpacity, StyleSheet, Keyboard, ScrollView, ActivityIndicator } from 'react-native'
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext } from 'react'
 import COLORS from '../constants/colors';
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -9,6 +9,9 @@ import Button from '../components/Button';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { AuthContext } from '../contexts/auth';
+import Dialog from '../components/Dialog';
+import DialogWarningFalse from '../components/DialogWarningFalse';
+import DialogWarningTrue from '../components/DialogWarningTrue';
 
 // Validations
 const schema = yup.object({
@@ -52,9 +55,14 @@ export default function PetScreen({navigation, route}){
     setIsFocused(null);
   };
 
+  const [visibleWarningFalse, setVisibleWarningFalse] = useState(false);
+  const [visibleWarningTrue, setVisibleWarningTrue] = useState(false);
+  const [visibleDelete, setVisibleDelete] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(null);
   const [fotoVisible, setFotoVisible] = useState(false);
+  const [desaparecido, setDesaparecido] = useState("");
+  const [recompensa, setRecompensa] = useState(petData.recompensa || "");
   const [foto, setFoto] = useState(); 
   const [nome, setNome] = useState(petData.nome || "");
   const [idade, setIdade] = useState(petData.idade || "");
@@ -80,30 +88,126 @@ export default function PetScreen({navigation, route}){
     }
   }
 
+  const handleConfirmDesaparecido = async () => {
+    try {
+      const formData = new FormData();
+
+      if(petData.desaparecido !== desaparecido){
+        formData.append('desaparecido', desaparecido);
+      }
+      if(petData.recompensa !== recompensa){
+        formData.append('recompensa', recompensa);
+      }
+
+      setDesaparecido('true');
+      setRecompensa(recompensa);
+
+      const response = await axios.put(`https://api-seekpet-prisma.onrender.com/update-pet/${petData.id}/${userInfo.id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('desaparecido:', desaparecido)
+      console.log('Resposta da API:', response.data);
+      setVisibleWarningTrue(false);
+
+    } catch (error) {
+      console.log('Erro ao enviar chamado de desaparecimento', error);
+    }
+  }
+
+  function sendDataConfirm(){
+    handleConfirmDesaparecido();
+  }
+
+  const handleCancelDesaparecido = async () => {
+    try {
+      const formData = new FormData();
+
+      if(petData.desaparecido !== desaparecido){
+        formData.append('desaparecido', desaparecido);
+      }
+      if(petData.recompensa !== recompensa){
+        formData.append('recompensa', recompensa);
+      }
+
+      setDesaparecido(null);
+      setRecompensa(null);
+
+      const response = await axios.put(`https://api-seekpet-prisma.onrender.com/update-pet/${petData.id}/${userInfo.id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('Resposta da API:', response.data);
+      setVisibleWarningFalse(false);
+
+    } catch (error) {
+      console.log('Erro ao cancelar chamado de desaparecimento', error);
+    }
+  }
+
+  function sendDataCancel(){
+    handleCancelDesaparecido();
+  }
+
+  const deletePet = async () => {
+    try {
+      const response = await axios.delete(`https://api-seekpet-prisma.onrender.com/delete-pet/${petData.id}`);
+      console.log('Resposta da API:', response.data);
+      navigation.goBack();
+
+    } catch (error) {
+      console.error('Erro ao deletar pet', error);
+    }
+  }
+
+  function deletePetData(){
+    deletePet();
+  }
+
   const sendPut = async () => {
     try {
       const formData = new FormData();
-      formData.append('nome', nome);
-      formData.append('idade', idade);
-      formData.append('especie', especie);
-      formData.append('raca', raca);
-      formData.append('sexo', sexo);
-      formData.append('doenca', doenca);
-      formData.append('vacina', vacina);
-      formData.append('castrado', castrado);
-      
-      formData.append('foto', {
-        uri: foto,
-        type: 'image/jpeg',
-        name: 'foto.jpg'
-      });
+      if(petData.nome !== nome){
+        formData.append('nome', nome);
+      }
+      if(petData.idade !== idade){
+        formData.append('idade', idade);
+      }
+      if(petData.especie !== especie){
+        formData.append('especie', especie);
+      }
+      if(petData.raca !== raca){
+        formData.append('raca', raca);
+      }
+      if(petData.sexo !== sexo){
+        formData.append('sexo', sexo);
+      }
+      if(petData.doenca !== doenca){
+        formData.append('doenca', doenca);
+      }
+      if(petData.vacina !== vacina){
+        formData.append('vacina', vacina);
+      }
+      if(petData.castrado !== castrado){
+        formData.append('castrado', castrado);
+      }
+
+      if(petData.foto !== foto){
+        formData.append('foto', {
+          uri: foto,
+          type: 'image/jpeg',
+          name: 'foto.jpg'
+        });
+      }
   
       const response = await axios.put(`https://api-seekpet-prisma.onrender.com/update-pet/${petData.id}/${userInfo.id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       console.log('Resposta da API:', response.data);
       navigation.goBack();
     } catch (error) {
@@ -120,6 +224,71 @@ export default function PetScreen({navigation, route}){
       <Pressable onPress={Keyboard.dismiss} style={styles.container}>
         <View style={styles.header}>
           <View style={styles.header2}>
+
+            <DialogWarningTrue
+              visible={visibleWarningTrue}
+              title={
+                loading ? (
+                  <ActivityIndicator size={20} color={COLORS.white} style={{paddingTop: 5}}/>
+                ) : (
+                  "Emitir aviso de desaparecimento"
+                )
+              }
+              type={'money'}
+              value={recompensa}
+              onChangeText={(text) => {setRecompensa(text);}}
+              text="Confirmar"
+              message={'Informe um valor de recompensa caso necessário:'}
+              cancelButton={true} 
+              positiveButton={() => sendDataConfirm()}
+              negativeButton={() => setVisibleWarningTrue(false)}
+            />
+
+            <DialogWarningFalse
+              visible={visibleWarningFalse}
+              title={
+                loading ? (
+                  <ActivityIndicator size={20} color={COLORS.white} style={{paddingTop: 5}}/>
+                ) : (
+                  "Cancelar Status de Desaparecido"
+                )
+              }
+              text="Confirmar"
+              message={`Deseja mesmo cancelar a busca?`}
+              cancelButton={true}
+              positiveButton={() => sendDataCancel()}
+              negativeButton={() => setVisibleWarningFalse(false)}
+            />
+
+            {petData.desaparecido == 'true' ? (
+                <TouchableOpacity onPress={() => setVisibleWarningFalse(true)}>
+                  <Ionicons name='alert-circle-outline' size={30} color={COLORS.error} />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={() => setVisibleWarningTrue(true)}>
+                  <Ionicons name='alert-circle-outline' size={30} color={COLORS.error} />
+                </TouchableOpacity>
+              )
+            }
+
+            <Dialog
+              visible={visibleDelete}
+              title={
+                loading ? (
+                  <ActivityIndicator size={20} color={COLORS.white} style={{paddingTop: 5}}/>
+                ) : (
+                  "Excluir carteira do Pet"
+                )
+              }
+              text="Confirmar"
+              message={'Deseja mesmo deletar a carteira do pet?'}
+              cancelButton={true}
+              positiveButton={() => {setVisibleDelete(false); deletePetData()}}
+              negativeButton={() => setVisibleDelete(false)}
+            />
+            <TouchableOpacity style={{marginLeft: 10, marginBottom: 2}} onPress={() => setVisibleDelete(true)} >
+              <MaterialCommunityIcons name='trash-can-outline' size={30} color={COLORS.data} />
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity
@@ -130,10 +299,13 @@ export default function PetScreen({navigation, route}){
               {fotoVisible ? (
                 <Image
                   source={{ uri: foto }}
-                  style={{ width: 100, height: 100, borderRadius: 50, marginTop: 10 }}
+                  style={{ width: 100, height: 100, borderRadius: 50 }}
                 />
-              ) : (
-                <Ionicons name='md-camera' size={32} color='#D8D8DB' />
+                ) : (
+                <Image
+                  source={{ uri: `https://api-seekpet-prisma.onrender.com/pets/${petData.foto}`}}
+                  style={{ width: 100, height: 100, borderRadius: 50 }}
+                />
               )}
             </View>
           </TouchableOpacity>
@@ -430,8 +602,8 @@ export default function PetScreen({navigation, route}){
                       value={castrado}
                       placeholder='Castrado'  
                       placeholderTextColor={COLORS.grey}
-                      keyboardType='default'
-                      style={{width: "100%"}}
+                      keyboardType='default' 
+                      style={{width: "100%", textTransform: 'uppercase'}}
                       maxLength={3}
                     />
                   )}
@@ -490,9 +662,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 22,
   },
   header2: {
-    marginVertical: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
+    // marginVertical: 30,
+    marginTop: 15,
+    marginBottom: 15,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
   },
   title: {
     fontSize: 22,

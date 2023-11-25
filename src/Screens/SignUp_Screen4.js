@@ -232,7 +232,7 @@ export default function SignUp({navigation, route}){
               }}
               disabled={loading}
             >
-            </Button>
+          </Button>
 
           <View style={styles.footer}>
             <Text style={{fontSize: 16, color: COLORS.black}}>Já possui uma conta?</Text>

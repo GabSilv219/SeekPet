@@ -1,17 +1,17 @@
-import { View, Text, StyleSheet, Image, FlatList,TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useState, useEffect, useContext } from 'react';
 import COLORS from '../constants/colors';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo, Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { AuthContext } from '../contexts/auth';
 import Dialog from '../components/Dialog';
 
 export default function Profile({navigation}) {
+  const {userInfo} = useContext(AuthContext);
   const [visible, setVisible] = useState(false);
   const [user, setUser] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const {userInfo} = useContext(AuthContext);
 
   const {logout} = useContext(AuthContext);
 
@@ -32,8 +32,10 @@ export default function Profile({navigation}) {
   
   return (
     <View style={styles.container}>
-      <View style={{marginTop: 64, alignItems: "center"}}>
-
+      <TouchableOpacity style={styles.header} onPress={() => navigation.navigate("Settings")}>
+        <Ionicons name='settings-outline' size={22} style={{marginRight: 20, marginTop: 5}}/>
+      </TouchableOpacity>
+      <View style={{marginTop: 20, alignItems: "center"}}>
         <View style={styles.avatarContainer}>
             <Image source={{uri: `https://api-seekpet-prisma.onrender.com/users/${userInfo.avatar}`}} style={styles.avatar}/>
         </View>
@@ -64,12 +66,15 @@ export default function Profile({navigation}) {
             "Sair"
           )
         }
+        text="Confirmar"
         message={'Deseja mesmo sair da sua conta?'}
         cancelButton={true}
         positiveButton={() => {setVisible(false); logout()}}
         negativeButton={() => setVisible(false)}
       />
-      <TouchableOpacity onPress={() => setVisible(true)} 
+      
+      {/* <TouchableOpacity onPress={() => setVisible(true)}  */}
+      <TouchableOpacity onPress={() => {setLoading(true); navigation.openDrawer()}} 
         style={{flexDirection: "row", justifyContent: 'center', alignItems: 'center'}}
       >
         <Text style={{color: COLORS.secondary, fontSize: 24 }}>Sair</Text>
@@ -94,6 +99,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#EFECF4',
+  },
+  header: {
+    paddingTop: 40,
+    paddingBottom: 13,
+    // backgroundColor: COLORS.white,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    borderBottomWidth: 1,
+    borderBottomColor: '#EBECF4',
+    shadowColor: '#454D65',
+    shadowOffset: {height: 5},
+    shadowRadius: 15,
+    shadowOpacity: 10,
+    zIndex: 10,
+    flexDirection: 'row',
   },
   avatarContainer: {
     shadowColor: '#151734',

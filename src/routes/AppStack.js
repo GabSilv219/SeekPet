@@ -1,18 +1,21 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import TabNavigator from './TabNavigator';
 import RegisterPet from '../Screens/RegisterPet';
 import PetScreen from '../Screens/PetScreen';
 import QRCodeScreen from '../Screens/QRCodeSreen';
+import Settings from '../Screens/Settings';
+import EditProfile from '../Screens/EditProfile';
+
+import DrawerRoutes from './DrawerNavigator';
 
 const Stack = createNativeStackNavigator();
 
-export default function StackRoutes(){
+export default function AppStack(){
   return(
     <Stack.Navigator initialRouteName='Welcome' screenOptions={{ headerShown: true }}>
       <Stack.Screen
       name='Home'
-      component={TabNavigator}
+      component={DrawerRoutes}
       options={{
         headerShown: false,
         headerShadowVisible: true,
@@ -44,6 +47,24 @@ export default function StackRoutes(){
       options={{
         headerShadowVisible: false,
         title: 'QRCode'
+      }}
+      />
+
+      <Stack.Screen
+      name='Settings'
+      component={Settings}
+      options={{
+        headerShadowVisible: false,
+        title: 'Configurações'
+      }}
+      />
+
+      <Stack.Screen
+      name='EditProfile'
+      component={EditProfile}
+      options={{
+        headerShadowVisible: false,
+        title: 'Editar Perfil'
       }}
       />
     </Stack.Navigator>

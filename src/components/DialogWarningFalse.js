@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Modal, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import COLORS from '../constants/colors';
 
-export default function Dialog(props){
+export default function DialogWarningFalse(props){
   return(
     <Modal transparent visible={props.visible}>
       <View

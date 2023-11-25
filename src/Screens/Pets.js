@@ -7,7 +7,7 @@ import { AuthContext } from '../contexts/auth';
 import { useNavigation } from "@react-navigation/native";
 import QRCode from 'react-native-qrcode-svg';
 
-export default function Pet({route}) {
+export default function Pets({route}) {
   const navigation = useNavigation();
   const [pets, setPets] = useState([]);
   const [refreshing, setRefreshing] = useState(false);

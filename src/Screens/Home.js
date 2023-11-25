@@ -1,25 +1,25 @@
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity} from 'react-native';
 import React, { useContext, useState, useEffect } from 'react';
 import COLORS from '../constants/colors';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo, Ionicons } from '@expo/vector-icons';
 import moment from 'moment';
 import ButtonsPost from '../components/ButtonsPost';
-import { AuthContext } from '../contexts/auth';
 import axios from 'axios';
+import { TextInput } from 'react-native-gesture-handler';
+import { AuthContext } from '../contexts/auth';
 
-export default function Home({ route }) {
+export default function Home({navigation }) {
+  const {userInfo} = useContext(AuthContext);
   const [posts, setPosts] = useState([]);
   const [users, setUsers] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const {userInfo} = useContext(AuthContext);
 
   const fetchPosts = async () => {
     try {
       const responsePosts = await axios.get('https://api-seekpet-prisma.onrender.com/posts/todos');
       const postsData = responsePosts.data;
       const sortedPosts = postsData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
       // const userPosts = sortedPosts.filter((posts) => posts.userId === userInfo.id);
       setPosts(sortedPosts);
     } catch (error) {
@@ -43,8 +43,6 @@ export default function Home({ route }) {
     fetchUsers();
   }, []);
 
-  // const reversedUsers = [...users].reverse();
-
   const handleRefresh = () => {
     setRefreshing(true);
     fetchUsers(10);
@@ -55,7 +53,19 @@ export default function Home({ route }) {
   return (  
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Feed SeekPet</Text>
+        <TouchableOpacity onPress={() => navigation.openDrawer()}>
+          <Image 
+            style={styles.drawerImage}
+            source={{uri: `https://api-seekpet-prisma.onrender.com/users/${userInfo.avatar}`}}
+          />
+        </TouchableOpacity>
+        <View style={styles.input}>
+          <Ionicons name='search-outline' size={20} color={COLORS.grey} style={{marginRight: 10, marginLeft: 5, marginTop: 3}}/>
+          <TextInput
+            placeholder='Pesquisar'
+            style={{width: '90%'}}
+          />
+        </View>
       </View>
       <FlatList
         refreshing={refreshing}
@@ -63,35 +73,6 @@ export default function Home({ route }) {
         style={styles.feed}
         data={posts}
         keyExtractor={(item) => item.id.toString()}
-        ListHeaderComponent={
-          <FlatList
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
-          style={{
-            marginTop: -20,
-          }}
-          horizontal={true}
-          data={users}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({item}) => (
-            <View style={[styles.header, {paddingRight: 10, paddingLeft: 10}]}>
-              <View style={styles.header2}>
-                <Image 
-                  source={{uri: `https://api-seekpet-prisma.onrender.com/users/${item.avatar}`}} 
-                  style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: 50,
-                    borderWidth: 2,
-                    borderColor: COLORS.primary,
-                  }} 
-                />
-                <Text style={{alignSelf: 'center', marginTop: 5, fontSize: 12, fontWeight: '500', color: "#454D65"  }}>{item.nome}</Text>
-              </View>
-            </View>
-          )}
-        />
-        }
         renderItem={({ item }) => (
           <View style={styles.feedItem}>
             <Image source={{ uri: `https://api-seekpet-prisma.onrender.com/users/${item.user.avatar}` }} style={styles.avatar} />
@@ -123,24 +104,41 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingTop: 40,
-    paddingBottom: 16,
+    paddingBottom: 13,
     backgroundColor: COLORS.white,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     borderBottomWidth: 1,
     borderBottomColor: '#EBECF4',
     shadowColor: '#454D65',
     shadowOffset: {height: 5},
     shadowRadius: 15,
     shadowOpacity: 10,
-    zIndex: 10
+    zIndex: 10,
+    flexDirection: 'row'
+  },
+  drawerImage: {
+    width: 40, 
+    height: 40, 
+    borderRadius: 30, 
+    marginLeft: 15, 
+    borderWidth: 1, 
+    borderColor: COLORS.primary,
+    marginTop: 5
+  },
+  input: {
+    flexDirection: 'row', 
+    backgroundColor: COLORS.background, 
+    marginLeft: 10, 
+    width: '80%', 
+    padding: 5, borderRadius: 10, 
+    marginTop: 5
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: "500",
   },
   feed: {
-    marginTop: 5,
     marginHorizontal: 3,
   },
   feedItem: {

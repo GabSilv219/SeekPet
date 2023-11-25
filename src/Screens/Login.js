@@ -53,7 +53,7 @@ export default function Login({navigation}){
                     onChangeText={(text) => {setEmail(text); onChange(text)}}
                     onBlur={onBlur}
                     value={email}
-                    placeholder='Email'
+                    placeholder='Email' 
                   />
                 )}
               />

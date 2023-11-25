@@ -26,7 +26,6 @@ export default function TabRoutes(){
         tabBarActiveTintColor: COLORS.primary,
       }}
     >
-
       <Tab.Screen
       name='SeekPet'
       component={Home}

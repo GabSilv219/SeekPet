@@ -1,8 +1,11 @@
-import React from 'react';
-import { View, Modal, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, {useState} from 'react';
+import { View, Modal, Text, TouchableOpacity, ActivityIndicator, StyleSheet, TextInput } from 'react-native';
 import COLORS from '../constants/colors';
+import { InputLogin } from './Inputs';
+import { TextInputMask } from 'react-native-masked-text';
 
-export default function Dialog(props){
+export default function DialogWarningTrue(props){
+  []
   return(
     <Modal transparent visible={props.visible}>
       <View
@@ -39,6 +42,29 @@ export default function Dialog(props){
           ></View>
 
           <Text style={{marginBottom: 20, alignSelf: 'flex-start'}}>{props.message}</Text>
+
+          <View 
+            style={{
+              width: "100%"
+            }}
+          >
+              <TextInputMask
+                type={props.type}
+                style={{marginLeft: 5}}
+                value={props.value}
+                onChangeText={props.onChangeText}
+                placeholder='R$00,00'
+                keyboardType='numeric'
+                maxLength={11}
+              />
+              <View 
+                style={{
+                  borderBottomColor: "#8A8F9E",
+                  borderBottomWidth: StyleSheet.hairlineWidth,
+                  marginBottom: 10
+                }}
+              />
+          </View>
 
           {props.cancelButton && <TouchableOpacity
             onPress={props.negativeButton}

@@ -32,6 +32,9 @@
       "eas": {
         "projectId": "4023b3d1-8b7a-4918-b250-4d293c496302"
       }
+    },
+    "cli": {
+      "appVersionSource": "remote"
     }
   }
 }
